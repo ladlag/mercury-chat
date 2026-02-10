@@ -9,6 +9,7 @@
 - Node.js 18+
 - pnpm 8+
 - 基本的 Vue 3 和 TypeScript 知识
+- 了解 DevUI MateChat 框架更佳
 
 ## 快速开始
 
@@ -43,8 +44,9 @@ mercury-chat/
 
 ### 3. 核心概念
 
-Mercury Chat 的核心是**能力系统**（Capability System）：
+Mercury Chat 基于 **DevUI 的 MateChat** (@matechat/core) 核心框架，通过**能力系统**（Capability System）进行扩展：
 
+- **MateChat 核心**: 提供聊天应用的基础架构和组件
 - **Capability**: 一个独立的功能单元（Chat 或 Agent）
 - **Registry**: 能力注册中心，管理所有能力
 - **Dynamic Rendering**: App.vue 动态渲染当前激活的能力
@@ -75,7 +77,7 @@ export const MyFirstChatCapability: Capability = {
     
     // UI 配置
     ui: {
-        main: MateChatDefaultView,    // 使用默认聊天视图
+        main: MateChatDefaultView,    // 使用 MateChat 默认聊天视图
     },
     
     // 可选：激活时的回调
@@ -490,10 +492,10 @@ navbar: {
 ## 小结
 
 你已经学会了：
-- ✅ 如何添加新的 Chat 能力
+- ✅ 如何基于 MateChat 框架添加新的 Chat 能力
 - ✅ 如何创建自定义 Agent
 - ✅ 如何使用状态管理
 - ✅ 如何添加国际化
 - ✅ 常见开发场景的处理
 
-现在开始你的 Mercury Chat 开发之旅吧！🚀
+现在开始你的基于 DevUI MateChat 的开发之旅吧！🚀

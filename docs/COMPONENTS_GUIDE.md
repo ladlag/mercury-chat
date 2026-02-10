@@ -2,7 +2,7 @@
 
 ## 概述
 
-Mercury Chat 提供了丰富的组件库，包括通用组件、能力组件和视图组件。本文档详细说明各组件的使用方法。
+Mercury Chat 基于 **DevUI 的 MateChat** (@matechat/core) 核心框架，提供了丰富的组件库，包括 MateChat 原生组件、能力扩展组件和通用组件。本文档详细说明各组件的使用方法。
 
 ## 目录结构
 
@@ -18,8 +18,8 @@ src/
 │   ├── CapabilitySideDrawer.vue     # 侧边栏抽屉
 │   ├── IsolatedChatView.vue         # 隔离聊天视图
 │   └── IsolatedHistoryList.vue      # 隔离历史列表
-└── view/                    # 页面视图组件
-    ├── chat-view/          # 聊天视图
+└── view/                    # MateChat 页面视图组件
+    ├── chat-view/          # MateChat 聊天视图
     ├── input/              # 输入组件
     ├── history/            # 历史记录
     ├── navbar/             # 导航栏
@@ -579,9 +579,18 @@ const langStore = useLangStore();
 console.log(langStore.currentLang);  // "cn" 或 "en"
 ```
 
-## UI 组件库 (Vue DevUI)
+## UI 组件库
 
-项目集成了 Vue DevUI 组件库，提供了丰富的 UI 组件：
+### MateChat 核心组件
+
+项目基于 **DevUI 的 MateChat** (@matechat/core)，核心组件来自 MateChat 框架：
+- ChatView - MateChat 原生聊天视图
+- Layout - MateChat 布局系统
+- McI18n - MateChat 国际化组件
+
+### Vue DevUI 组件库（辅助）
+
+项目部分引入了 Vue DevUI 组件库，提供了丰富的 UI 组件：
 
 ### 常用组件
 
@@ -722,12 +731,14 @@ const emit = defineEmits(['change', 'click']);
 
 ## 总结
 
-Mercury Chat 提供了完整的组件体系，包括：
+Mercury Chat 基于 **DevUI 的 MateChat** 核心框架，提供了完整的组件体系，包括：
 
-1. **通用组件**：可在任何地方使用的基础组件
-2. **能力组件**：支持能力扩展的专用组件
-3. **视图组件**：构成页面的功能组件
-4. **布局组件**：控制页面结构的容器组件
-5. **组合式函数**：可复用的逻辑封装
+1. **MateChat 核心组件**：来自 @matechat/core 的成熟组件
+2. **能力扩展组件**：支持能力扩展的专用组件
+3. **通用组件**：可在任何地方使用的基础组件
+4. **视图组件**：构成页面的功能组件
+5. **布局组件**：控制页面结构的容器组件
+6. **组合式函数**：可复用的逻辑封装
+7. **Vue DevUI 组件**：部分引入的辅助 UI 组件库
 
-合理使用这些组件，可以快速构建功能丰富、体验优秀的 AI 聊天应用。
+合理使用这些组件，可以快速构建功能丰富、体验优秀、保持 DevUI 风格的 AI 聊天应用。

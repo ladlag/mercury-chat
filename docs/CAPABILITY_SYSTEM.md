@@ -2,7 +2,13 @@
 
 ## 概述
 
-Mercury Chat 的核心创新是**能力插件化架构**（Capability-driven UI Host Architecture），这是一个工业级的扩展系统，允许灵活地添加和管理不同类型的 Chat 和 Agent 能力。
+Mercury Chat 基于 **DevUI 的 MateChat** (@matechat/core) 核心框架，通过**能力插件化架构**（Capability-driven UI Host Architecture）实现功能扩展。这是一个工业级的扩展系统，在保持 MateChat 原生体验的基础上，允许灵活地添加和管理不同类型的 Chat 和 Agent 能力。
+
+**核心理念**：
+- 基于 MateChat 核心框架
+- 不破坏 MateChat 原有机制
+- 保持 DevUI 设计风格
+- 通过能力注册实现扩展
 
 ## 能力模型
 
@@ -587,7 +593,7 @@ export const ChatCodingCapability: Capability = {
 | Side 抽屉式 | ✅ |
 | 不破坏 MateChat | ✅ |
 | Layout 可复用 | ✅ |
-| 样式统一 | ✅ |
+| 样式统一（DevUI 风格） | ✅ |
 | 插件化注册 | ✅ |
 | Map 去重 | ✅ |
 | 自定义排序 | ✅ |
@@ -609,11 +615,12 @@ export const ChatCodingCapability: Capability = {
 
 ## 总结
 
-Mercury Chat 的能力扩展系统是一个**工业级的插件化架构**，具有以下特点：
+Mercury Chat 基于 **DevUI 的 MateChat** 核心框架，通过能力扩展系统实现功能扩展，是一个**工业级的插件化架构**，具有以下特点：
 
-1. **比路由更灵活**：无需配置路由即可添加新能力
-2. **比微前端更轻**：无需复杂的微前端框架
-3. **比 slot 注入更可控**：统一的能力模型和生命周期
-4. **比多 Layout 更工程化**：清晰的职责划分和扩展点
+1. **基于成熟框架**：构建在 DevUI MateChat (@matechat/core) 之上
+2. **比路由更灵活**：无需配置路由即可添加新能力
+3. **比微前端更轻**：无需复杂的微前端框架
+4. **比 slot 注入更可控**：统一的能力模型和生命周期
+5. **保持原生体验**：不破坏 MateChat 原有机制和 DevUI 风格
 
 这套体系不仅支持当前的需求，还具备良好的扩展性，可以支持未来更复杂的 AI 应用场景。
