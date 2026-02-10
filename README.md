@@ -1,10 +1,12 @@
 # Mercury Chat (MateChat)
 
-一个基于 Vue 3 + TypeScript 的现代化 AI 聊天应用，采用创新的能力插件化架构。
+基于 **DevUI 的 MateChat** (@matechat/core) 核心框架，采用创新的能力插件化架构扩展的 AI 聊天应用。
 
 ## 项目简介
 
-Mercury Chat 是一个可扩展的 AI 聊天平台，支持：
+Mercury Chat 是基于 **DevUI MateChat** 构建的可扩展 AI 聊天平台，在保持 MateChat 原生体验的基础上，通过能力插件化系统实现功能扩展：
+
+- ✅ 基于 MateChat 核心框架（@matechat/core）
 - ✅ 多种 Chat 能力（共享或隔离会话）
 - ✅ 自定义 Agent 能力
 - ✅ 流式 AI 响应
@@ -14,16 +16,18 @@ Mercury Chat 是一个可扩展的 AI 聊天平台，支持：
 
 ### 技术栈
 
+- **核心框架**: DevUI MateChat (@matechat/core 1.5.2) ⭐ 主体
 - **前端框架**: Vue 3.5 + TypeScript 5.7
 - **构建工具**: Vite 6.2
 - **状态管理**: Pinia 3.0
-- **UI 组件**: Vue DevUI
+- **UI 组件库**: Vue DevUI (部分引入) + DevUI Icons + DevUI Theme
 - **AI 集成**: OpenAI SDK
 
 ### 项目信息
 
 - 子项目包名规则: @matechat/\*
 - 包名: @matechat/vue-starter
+- 核心依赖: @matechat/core (DevUI MateChat)
 - 代码行数: 约 4,700+ 行
 
 ## 依赖安装
@@ -128,14 +132,21 @@ export const MyAgent: Capability = {
 
 ## 架构亮点
 
-### 1. 能力插件化架构
+### 1. 基于 DevUI MateChat 核心
+
+- **成熟框架**：基于 DevUI 的 MateChat (@matechat/core) 核心框架
+- **原生体验**：保持 MateChat 的原生体验与风格
+- **不破坏机制**：在 MateChat 基础上扩展，不改变核心机制
+- **DevUI 生态**：集成 DevUI 图标、主题等生态组件
+
+### 2. 能力插件化架构
 
 - **比路由更灵活**：无需配置路由即可添加新能力
 - **比微前端更轻**：无需复杂的微前端框架
 - **比 slot 注入更可控**：统一的能力模型和生命周期
 - **Map 去重机制**：保证能力 ID 唯一性
 
-### 2. 模块化状态管理
+### 3. 模块化状态管理
 
 - 按功能域划分的 Pinia Store
 - 支持全局共享和局部隔离
@@ -145,7 +156,7 @@ export const MyAgent: Capability = {
 
 - 清晰的职责划分
 - 高度可复用的组件
-- 统一的样式规范
+- 统一的样式规范（DevUI 风格）
 
 ### 4. 类型安全
 
@@ -162,7 +173,7 @@ export const MyAgent: Capability = {
 ├── src/
 │   ├── capabilities/      # ⭐ 核心：能力扩展系统
 │   ├── store/             # ⭐ 核心：状态管理
-│   ├── view/              # 页面视图组件
+│   ├── view/              # MateChat 页面视图组件
 │   ├── components/        # 通用组件
 │   ├── hooks/             # 组合式函数
 │   └── models/            # AI 模型集成
@@ -175,7 +186,7 @@ export const MyAgent: Capability = {
 
 1. **添加能力**：在 `capabilities/` 目录创建新能力
 2. **状态管理**：在 `store/` 目录添加相应的 store
-3. **UI 组件**：在 `view/` 或 `components/` 实现 UI
+3. **UI 组件**：复用 MateChat 组件或创建新组件
 4. **注册能力**：在 `capabilities/index.ts` 注册
 5. **测试验证**：运行 `pnpm dev` 查看效果
 
@@ -190,13 +201,14 @@ export const MyAgent: Capability = {
 
 ### 已支持的扩展
 
+- ✅ 基于 MateChat 核心的能力扩展
 - ✅ 多 Chat 能力（共享或隔离）
 - ✅ 多 Agent 能力
 - ✅ 自定义 UI 布局
 - ✅ 独立的工具面板
 - ✅ 流式响应
-- ✅ 主题定制
-- ✅ 国际化
+- ✅ 主题定制（DevUI Theme）
+- ✅ 国际化（集成 MateChat Locale）
 
 ### 未来可扩展
 
@@ -225,13 +237,17 @@ export const MyAgent: Capability = {
 
 ---
 
-**Mercury Chat** - 一个工业级的可扩展 AI 聊天平台
+**Mercury Chat** - 基于 DevUI MateChat 构建的工业级可扩展 AI 聊天平台
 
 ## 核心特性
 
+### 基于 DevUI MateChat
+
+本项目以 **DevUI 的 MateChat** (@matechat/core) 为核心框架，在不破坏 MateChat 原有机制的基础上，通过能力插件化系统进行扩展。
+
 ### 能力插件化架构
 
-Mercury Chat 的核心创新是**能力插件化系统**（Capability-driven UI Host Architecture）：
+在 MateChat 基础上构建的**能力插件化系统**（Capability-driven UI Host Architecture）：
 
 ```typescript
 // 定义一个新的 Chat 或 Agent 能力
@@ -254,8 +270,8 @@ registerCapability(MyCapability);
 
 ### 灵活的数据管理
 
-- **共享存储**：多个能力共用全局 store（适用于标准聊天）
-- **隔离存储**：独立的会话管理（适用于特殊场景）
+- **共享存储**：多个能力共用全局 store（适用于标准 MateChat 聊天）
+- **隔离存储**：独立的会话管理（适用于特殊扩展场景）
 - **持久化**：支持 localStorage 和 Pinia 持久化
 
 ### 流式 AI 响应
@@ -274,6 +290,30 @@ client.chat({
     },
 });
 ```
+
+## 架构说明
+
+### MateChat 核心集成
+
+项目基于 DevUI 的 MateChat (@matechat/core) 核心框架：
+
+```typescript
+// main.ts
+import MateChat from '@matechat/core';
+import VueDevui from 'vue-devui';  // 部分引入作为辅助组件库
+
+createApp(App)
+  .use(pinia)
+  .use(MateChat)      // MateChat 核心
+  .use(VueDevui)      // Vue DevUI 组件库
+  .use(i18n)
+  .mount('#app');
+```
+
+**关键说明**：
+- `@matechat/core` 是项目的核心框架，提供了聊天应用的基础能力
+- `vue-devui` 作为辅助 UI 组件库，部分引入使用
+- 能力插件化系统是在 MateChat 基础上的扩展层
 
 ## 目录结构
 

@@ -2,34 +2,38 @@
 
 ## 项目概述
 
-Mercury Chat (MateChat) 是一个**工业级的可扩展 AI 聊天平台**，采用 Vue 3 + TypeScript 构建，代码总量约 4,700+ 行。
+Mercury Chat (MateChat) 是基于 **DevUI 的 MateChat** (@matechat/core) 核心框架构建的**工业级可扩展 AI 聊天平台**，采用 Vue 3 + TypeScript，代码总量约 4,700+ 行。
 
 ### 核心特色
 
-1. **能力插件化架构** - 创新的扩展系统，轻松添加新功能
-2. **灵活的数据管理** - 支持共享和隔离两种模式
-3. **完整的类型系统** - TypeScript 全覆盖，类型安全
-4. **模块化设计** - 清晰的代码组织和职责划分
-5. **流式 AI 响应** - 支持实时流式输出
+1. **基于 DevUI MateChat 框架** - 成熟的聊天应用核心 (@matechat/core)
+2. **能力插件化架构** - 在 MateChat 基础上的创新扩展系统
+3. **灵活的数据管理** - 支持共享和隔离两种模式
+4. **完整的类型系统** - TypeScript 全覆盖，类型安全
+5. **模块化设计** - 清晰的代码组织和职责划分
+6. **流式 AI 响应** - 支持实时流式输出
+7. **保持原生体验** - 不破坏 MateChat 原有机制和 DevUI 风格
 
 ## 技术栈详解
 
 ### 核心技术
 
-| 技术 | 版本 | 用途 |
-|------|------|------|
-| Vue | 3.5.13 | 渐进式前端框架 |
-| TypeScript | 5.7.2 | 类型安全的 JavaScript 超集 |
-| Vite | 6.2.0 | 快速的构建工具 |
-| Pinia | 3.0.2 | Vue 的状态管理库 |
-| Vue Router | 4.5.0 | 官方路由库 |
-| Vue DevUI | 1.6.32 | UI 组件库 |
-| Vue I18n | 11.1.2 | 国际化插件 |
-| OpenAI SDK | 5.3.0 | AI 模型集成 |
+| 技术 | 版本 | 用途 | 优先级 |
+|------|------|------|--------|
+| @matechat/core | 1.5.2 | DevUI MateChat 核心框架 | ⭐ **主体** |
+| @devui-design/icons | 1.4.0 | DevUI 图标库 | ⭐ 核心 |
+| devui-theme | 0.1.0 | DevUI 主题系统 | ⭐ 核心 |
+| Vue | 3.5.13 | 渐进式前端框架 | ⭐ 核心 |
+| TypeScript | 5.7.2 | 类型安全的 JavaScript 超集 | ⭐ 核心 |
+| Vite | 6.2.0 | 快速的构建工具 | ⭐ 核心 |
+| Pinia | 3.0.2 | Vue 的状态管理库 | ⭐ 核心 |
+| Vue Router | 4.5.0 | 官方路由库 | 核心 |
+| vue-devui | 1.6.32 | Vue DevUI 组件库（辅助） | 辅助 |
+| Vue I18n | 11.1.2 | 国际化插件 | 辅助 |
+| OpenAI SDK | 5.3.0 | AI 模型集成 | 功能 |
 
 ### 开发工具
 
-- **@matechat/core** (1.5.2) - 核心库
 - **unplugin-auto-import** - 自动导入 API
 - **sass** - CSS 预处理器
 - **dayjs** - 日期处理
@@ -37,9 +41,39 @@ Mercury Chat (MateChat) 是一个**工业级的可扩展 AI 聊天平台**，采
 
 ## 架构设计详解
 
+### 0. MateChat 核心框架基础
+
+项目基于 **DevUI 的 MateChat** (@matechat/core) 核心框架：
+
+```typescript
+// main.ts - 应用启动
+import MateChat from '@matechat/core';        // MateChat 核心框架
+import VueDevui from 'vue-devui';             // 辅助 UI 组件库
+import McI18n from '@matechat/core/Locale';   // MateChat 国际化
+
+createApp(App)
+  .use(pinia)
+  .use(MateChat)      // 注册 MateChat 核心 ⭐ 主体
+  .use(VueDevui)      // 注册 Vue DevUI 组件（辅助）
+  .use(i18n)
+  .mount('#app');
+```
+
+**MateChat 核心提供**：
+- 聊天应用的基础架构和组件
+- 国际化支持（McI18n）
+- 主题系统集成（devui-theme）
+- 全局配置管理
+- DevUI 风格的基础组件
+
+**关键说明**：
+- `@matechat/core` 是项目的核心框架（主体）
+- `vue-devui` 作为辅助 UI 组件库，部分引入使用
+- 项目保持 MateChat 的原生体验和 DevUI 设计风格
+
 ### 1. 能力插件化系统（核心创新）
 
-这是 Mercury Chat 最核心的架构设计，实现了功能的灵活扩展。
+在 MateChat 核心基础上，实现了功能的灵活扩展。
 
 #### 设计理念
 
