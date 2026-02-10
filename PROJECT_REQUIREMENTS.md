@@ -198,6 +198,249 @@ function myOwnChatImplementation() {
 - 复用 `CapabilityViewLayout`、`IsolatedChatView` 等组件
 - 参考现有 Agent（requirement）的实现模式
 
+### 原则 7: 代码独立性和框架升级兼容性 ⭐⭐⭐
+
+**保证业务代码独立，便于 MateChat 框架升级时不影响业务逻辑**
+
+#### 核心目标
+
+1. **业务代码与框架解耦**：业务逻辑不直接依赖框架内部实现
+2. **框架升级零影响**：MateChat 版本升级不需要修改业务代码
+3. **清晰的依赖边界**：明确哪些是框架代码，哪些是业务代码
+
+#### 分层架构
+
+```
+┌─────────────────────────────────────────┐
+│   业务代码层 (Business Layer)            │  ← 你的代码
+│   - capabilities/ (Agent 实现)           │
+│   - store/ (业务状态)                    │
+│   - components/ (业务组件)               │
+└─────────────────────────────────────────┘
+              ↓ (最小化依赖)
+┌─────────────────────────────────────────┐
+│   适配器层 (Adapter Layer) - 可选        │  ← 隔离层
+│   - adapters/matechat-adapter.ts       │
+│   - adapters/i18n-adapter.ts           │
+└─────────────────────────────────────────┘
+              ↓
+┌─────────────────────────────────────────┐
+│   框架层 (Framework Layer)               │  ← MateChat
+│   - @matechat/core                     │
+│   - @matechat/core/Locale              │
+└─────────────────────────────────────────┘
+```
+
+#### 最小化框架依赖
+
+**规则 1: 限制框架导入位置**
+
+```typescript
+// ✅ 正确做法：仅在必要位置导入框架
+// src/main.ts - 框架初始化（必需）
+import MateChat from '@matechat/core';
+createApp(App).use(MateChat);
+
+// src/adapters/i18n-adapter.ts - 适配器封装（推荐）
+import McI18n from '@matechat/core/Locale';
+export const I18nAdapter = {
+    use: (lang: string) => McI18n.use(lang)
+};
+
+// ❌ 错误做法：业务代码直接导入框架
+// src/capabilities/my-agent/my-agent.ts
+import McI18n from '@matechat/core/Locale';  // 不要这样做
+McI18n.use('cn');
+```
+
+**允许导入的位置**：
+- `src/main.ts` - 框架初始化
+- `src/adapters/` - 适配器封装
+- `src/global-config.ts` - 全局配置
+
+**禁止导入的位置**：
+- `src/capabilities/` - 业务能力
+- `src/store/` - 业务状态（除特殊情况）
+- `src/components/` - 业务组件
+
+**规则 2: 使用适配器模式（推荐）**
+
+```typescript
+// ✅ 正确做法：创建适配器
+// src/adapters/i18n-adapter.ts
+import McI18n from '@matechat/core/Locale';
+
+export const I18nAdapter = {
+    use(lang: string) {
+        try {
+            // MateChat v1.x API
+            McI18n.use(lang);
+        } catch (error) {
+            console.error('i18n adapter error:', error);
+            // 可以添加降级处理
+        }
+    },
+    
+    getCurrentLanguage(): string {
+        // 封装获取当前语言的逻辑
+        return localStorage.getItem('matechat-lang') || 'cn';
+    }
+};
+
+// 业务代码使用适配器
+// src/store/lang-store.ts
+import { I18nAdapter } from '@/adapters/i18n-adapter';
+
+export const useLangStore = defineStore('lang', () => {
+    const updateCurrentLang = (val: LangType) => {
+        // 通过适配器访问框架
+        I18nAdapter.use(val);
+        localStorage.setItem('matechat-lang', val);
+    };
+    return { updateCurrentLang };
+});
+
+// ❌ 错误做法：直接依赖框架
+import McI18n from '@matechat/core/Locale';
+McI18n.use('cn');  // 直接调用，框架升级可能破坏
+```
+
+**规则 3: 版本兼容处理**
+
+```typescript
+// ✅ 正确做法：适配器中处理版本兼容
+// src/adapters/matechat-adapter.ts
+export const MateChatAdapter = {
+    version: '1.5.2',  // 记录当前使用的版本
+    
+    // 检测 API 可用性
+    checkAPIAvailability() {
+        const hasNewAPI = typeof McI18n.setLanguage !== 'undefined';
+        return {
+            v1: !hasNewAPI,  // 旧版 API
+            v2: hasNewAPI,   // 新版 API
+        };
+    },
+    
+    // 兼容不同版本
+    setLanguage(lang: string) {
+        const api = this.checkAPIAvailability();
+        
+        if (api.v2) {
+            // MateChat v2.x 新 API
+            McI18n.setLanguage(lang);
+        } else {
+            // MateChat v1.x 旧 API
+            McI18n.use(lang);
+        }
+    }
+};
+```
+
+**规则 4: 依赖隔离检查清单**
+
+开发新功能时，检查：
+- [ ] 是否需要直接导入 `@matechat/core`？
+- [ ] 能否通过适配器访问框架功能？
+- [ ] 能否使用 Vue 生态的替代方案？
+- [ ] 是否创建了清晰的依赖边界？
+
+#### 框架升级策略
+
+**升级准备清单**：
+
+1. **升级前检查**
+   ```bash
+   # 1. 检查所有框架导入
+   grep -r "@matechat/core" src/
+   
+   # 2. 确认导入位置是否合理
+   # 应该只在 main.ts 和 adapters/ 中
+   
+   # 3. 检查适配器是否完整
+   ls -la src/adapters/
+   ```
+
+2. **升级中测试**
+   ```bash
+   # 1. 更新依赖
+   pnpm update @matechat/core
+   
+   # 2. 运行项目
+   pnpm dev
+   
+   # 3. 测试核心功能
+   - 能力切换
+   - 国际化
+   - 主题系统
+   - 业务功能
+   ```
+
+3. **升级后验证**
+   - 所有能力正常加载
+   - 国际化正常工作
+   - 主题正常切换
+   - 业务功能无异常
+   - 无控制台错误
+
+**降级和回滚**：
+
+如果升级导致问题，可以快速回滚：
+
+```bash
+# 回滚到指定版本
+pnpm add @matechat/core@1.5.2 -E
+
+# 重新运行
+pnpm dev
+```
+
+由于业务代码独立，回滚框架不会影响业务逻辑。
+
+#### 实施建议
+
+**立即执行（强烈推荐）**：
+
+1. **创建适配器目录**
+   ```bash
+   mkdir -p src/adapters
+   ```
+
+2. **创建国际化适配器**
+   ```typescript
+   // src/adapters/i18n-adapter.ts
+   import McI18n from '@matechat/core/Locale';
+   
+   export const I18nAdapter = {
+       use: (lang: string) => McI18n.use(lang),
+       getCurrentLanguage: () => localStorage.getItem('matechat-lang') || 'cn',
+   };
+   ```
+
+3. **更新业务代码**
+   ```typescript
+   // src/store/lang-store.ts
+   - import McI18n from '@matechat/core/Locale';
+   + import { I18nAdapter } from '@/adapters/i18n-adapter';
+   
+   - McI18n.use(val);
+   + I18nAdapter.use(val);
+   ```
+
+**渐进改进（推荐）**：
+
+1. 新功能开发时使用适配器
+2. 逐步重构现有代码
+3. 建立框架升级测试流程
+4. 完善适配器功能
+
+**长期维护**：
+
+1. 定期检查框架依赖
+2. 保持适配器更新
+3. 监控 MateChat 版本更新
+4. 测试框架兼容性
+
 ---
 
 ## 技术架构约束
@@ -371,6 +614,45 @@ registerCapability(MyAgentCapability);
 - [ ] 是否遵循了目录结构规范？
 - [ ] 是否添加了必要的国际化？
 - [ ] 是否保持了 DevUI 设计风格？
+- [ ] **是否最小化了框架依赖？** ⭐ 新增
+- [ ] **是否通过适配器访问框架？** ⭐ 新增
+- [ ] **业务代码是否独立于框架？** ⭐ 新增
+
+### 4. 框架依赖检查（新增）⭐
+
+**检查框架导入位置**：
+
+```bash
+# 检查所有 @matechat/core 导入
+cd /home/runner/work/mercury-chat/mercury-chat
+grep -r "import.*@matechat/core" src/ --include="*.ts" --include="*.vue"
+
+# 应该只在以下位置：
+# ✅ src/main.ts - 框架初始化
+# ✅ src/adapters/*.ts - 适配器封装
+# ❌ 其他位置 - 需要重构
+```
+
+**检查适配器覆盖**：
+
+```bash
+# 检查是否有适配器
+ls -la src/adapters/
+
+# 推荐的适配器：
+# - i18n-adapter.ts (国际化)
+# - theme-adapter.ts (主题，如需要)
+# - config-adapter.ts (配置，如需要)
+```
+
+**验证业务代码独立性**：
+
+```bash
+# 业务代码不应直接导入框架
+grep -r "@matechat/core" src/capabilities/ src/store/ src/components/
+
+# 如果有结果，需要重构使用适配器
+```
 
 ---
 
@@ -461,6 +743,146 @@ src/capabilities/common/
 
 参考 `docs/WORKFLOW_SYSTEM_PLAN.md`（待创建）
 
+### MateChat 框架升级指南（新增）⭐
+
+#### 升级前准备
+
+1. **检查当前框架依赖**
+   ```bash
+   # 查看当前版本
+   cat package.json | grep "@matechat/core"
+   
+   # 检查所有框架导入
+   grep -r "@matechat/core" src/ --include="*.ts" --include="*.vue"
+   
+   # 确认导入位置是否符合规范
+   # ✅ 应该只在 main.ts 和 adapters/ 中
+   ```
+
+2. **备份当前状态**
+   ```bash
+   # 创建备份分支
+   git checkout -b backup-before-matechat-upgrade
+   git push origin backup-before-matechat-upgrade
+   
+   # 或创建 tag
+   git tag matechat-v1.5.2
+   git push origin matechat-v1.5.2
+   ```
+
+3. **阅读升级日志**
+   - 查看 MateChat 的 CHANGELOG
+   - 确认 Breaking Changes
+   - 了解新 API 和废弃的 API
+
+#### 升级步骤
+
+1. **更新依赖**
+   ```bash
+   # 更新到指定版本
+   pnpm add @matechat/core@2.0.0
+   
+   # 或更新到最新版本
+   pnpm update @matechat/core
+   ```
+
+2. **更新适配器**
+   ```typescript
+   // src/adapters/i18n-adapter.ts
+   // 添加版本兼容逻辑
+   export const I18nAdapter = {
+       use(lang: string) {
+           // 检测 API 版本
+           if (typeof McI18n.setLanguage !== 'undefined') {
+               // v2.x 新 API
+               McI18n.setLanguage(lang);
+           } else {
+               // v1.x 旧 API
+               McI18n.use(lang);
+           }
+       }
+   };
+   ```
+
+3. **本地测试**
+   ```bash
+   # 启动开发服务器
+   pnpm dev
+   
+   # 测试核心功能
+   # - 能力切换
+   # - 国际化
+   # - 主题系统
+   # - 所有 Agent 功能
+   ```
+
+4. **检查控制台错误**
+   - 打开浏览器控制台
+   - 查看是否有错误或警告
+   - 测试所有功能路径
+
+5. **运行构建测试**
+   ```bash
+   # 构建生产版本
+   pnpm build
+   
+   # 预览生产版本
+   pnpm preview
+   ```
+
+#### 升级验证清单
+
+- [ ] 项目正常启动（`pnpm dev`）
+- [ ] 所有能力正常加载
+- [ ] 导航栏切换正常
+- [ ] 国际化切换正常
+- [ ] 主题系统正常
+- [ ] 所有 Agent 功能正常
+- [ ] 聊天功能正常
+- [ ] 历史记录正常
+- [ ] 无控制台错误
+- [ ] 生产构建成功
+
+#### 升级失败回滚
+
+如果升级导致问题，立即回滚：
+
+```bash
+# 方法 1: 回滚到指定版本
+pnpm add @matechat/core@1.5.2 -E
+
+# 方法 2: 恢复 package.json
+git checkout package.json package-lock.json
+pnpm install
+
+# 方法 3: 切换到备份分支
+git checkout backup-before-matechat-upgrade
+```
+
+#### 升级后优化
+
+1. **移除兼容代码**
+   - 如果完全升级到新版本
+   - 可以移除适配器中的旧版本兼容代码
+
+2. **更新文档**
+   - 更新 PROJECT_REQUIREMENTS.md 中的版本号
+   - 更新 docs/TECH_STACK.md
+
+3. **提交变更**
+   ```bash
+   git add .
+   git commit -m "chore: upgrade @matechat/core to v2.0.0"
+   git push
+   ```
+
+#### 版本兼容性记录
+
+| MateChat 版本 | 兼容性 | 变更说明 | 升级指南 |
+|--------------|--------|----------|----------|
+| 1.5.2 | ✅ 当前版本 | - | - |
+| 2.0.0 | 🚧 待测试 | API 变更 | 需要更新适配器 |
+
 ---
 
 ## 联系和支持
@@ -470,8 +892,49 @@ src/capabilities/common/
 - [能力扩展系统](./docs/CAPABILITY_SYSTEM.md)
 - [技术栈说明](./docs/TECH_STACK.md)
 
+## 核心原则总结
+
+### 7 大开发原则（必须遵循）
+
+1. ⭐⭐⭐ **能力插件化系统** - 所有功能通过 Capability 实现
+2. ⭐⭐⭐ **在 MateChat 基础上扩展** - 不破坏核心机制
+3. ⭐⭐⭐ **不破坏原有机制** - 向后兼容、数据隔离
+4. ⭐⭐ **组件优先级** - MateChat > vue-devui > 自定义
+5. ⭐⭐⭐ **不改变框架机制** - 不修改核心文件
+6. ⭐⭐ **避免过多自定义代码** - 复用胜于重写
+7. ⭐⭐⭐ **代码独立性和框架升级兼容性** - 业务代码与框架解耦 ⭐ 新增
+
+### 关键要点
+
+✅ **必须做的**：
+- 通过能力插件化系统添加功能
+- 优先使用 MateChat 和 vue-devui 组件
+- 业务代码独立，最小化框架依赖
+- 使用适配器模式访问框架 API
+- 保持清晰的依赖边界
+
+❌ **禁止做的**：
+- 修改核心框架文件（registry.ts, App.vue, main.ts）
+- 业务代码直接导入 `@matechat/core`
+- 破坏现有功能
+- 重复实现已有功能
+- 绕过能力系统
+
+⚠️ **需要注意的**：
+- 框架升级时通过适配器实现兼容
+- 定期检查框架依赖位置
+- 保持业务代码与框架解耦
+- 遵循目录结构规范
+
 ---
 
 **最后更新**: 2026-02-10  
-**版本**: 1.0.0  
+**版本**: 1.1.0 (新增原则 7: 代码独立性和框架升级兼容性)  
 **状态**: 活跃维护中
+
+**变更日志**：
+- 2026-02-10 v1.1.0: 新增原则 7 - 代码独立性和框架升级兼容性
+- 2026-02-10 v1.1.0: 新增适配器模式指南
+- 2026-02-10 v1.1.0: 新增 MateChat 框架升级指南
+- 2026-02-10 v1.1.0: 新增框架依赖检查清单
+- 2026-02-10 v1.0.0: 初始版本，定义 6 大开发原则
