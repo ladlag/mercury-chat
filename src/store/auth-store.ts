@@ -2,6 +2,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import type { User, LoginMethod, LoginRequest } from '@/types/auth-types';
+import { AuthAdapter } from '@/adapters/auth-adapter';
 
 export const useAuthStore = defineStore('auth', () => {
   // State
@@ -38,28 +39,23 @@ export const useAuthStore = defineStore('auth', () => {
   // Login
   const login = async (request: LoginRequest): Promise<boolean> => {
     try {
-      // TODO: Replace with actual API call
-      // Simulate API call for now
-      const mockUser: User = {
-        id: 'mock-user-id',
-        username: request.phone || request.email || 'User',
-        email: request.email,
-        phone: request.phone,
-        avatar: '',
-        createdAt: new Date(),
-      };
+      // Call real API through adapter
+      const result = await AuthAdapter.loginAPI(request);
+      
+      if (!result.success || !result.token || !result.user) {
+        console.error('Login failed:', result.message);
+        return false;
+      }
 
-      const mockToken = 'mock-jwt-token-' + Date.now();
-
-      // Update state
-      user.value = mockUser;
-      token.value = mockToken;
+      // Update state with real data from API
+      user.value = result.user;
+      token.value = result.token;
       loginMethod.value = request.method;
       isAuthenticated.value = true;
 
       // Persist to localStorage
-      localStorage.setItem('auth-token', mockToken);
-      localStorage.setItem('auth-user', JSON.stringify(mockUser));
+      localStorage.setItem('auth-token', result.token);
+      localStorage.setItem('auth-user', JSON.stringify(result.user));
       localStorage.setItem('auth-method', request.method);
 
       return true;
@@ -70,7 +66,16 @@ export const useAuthStore = defineStore('auth', () => {
   };
 
   // Logout
-  const logout = () => {
+  const logout = async () => {
+    try {
+      // Call logout API to invalidate token on server
+      await AuthAdapter.logoutAPI();
+    } catch (error) {
+      console.error('Logout API failed:', error);
+      // Continue with local logout even if API fails
+    }
+
+    // Clear local state
     user.value = null;
     token.value = null;
     loginMethod.value = null;
@@ -84,11 +89,8 @@ export const useAuthStore = defineStore('auth', () => {
   // Send verification code
   const sendVerificationCode = async (phone: string): Promise<boolean> => {
     try {
-      // TODO: Replace with actual API call
-      console.log('Sending verification code to:', phone);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return true;
+      const result = await AuthAdapter.sendVerificationCodeAPI(phone);
+      return result.success;
     } catch (error) {
       console.error('Failed to send verification code:', error);
       return false;
@@ -98,13 +100,51 @@ export const useAuthStore = defineStore('auth', () => {
   // Get WeChat QR code
   const getWeChatQRCode = async (type: 'official' | 'scan'): Promise<string | null> => {
     try {
-      // TODO: Replace with actual API call
-      console.log('Getting WeChat QR code for:', type);
-      // Return a mock QR code URL
-      return `https://api.example.com/wechat/qr?type=${type}&t=${Date.now()}`;
+      const result = await AuthAdapter.getWeChatQRCodeAPI(type);
+      return result.success ? result.qrUrl || null : null;
     } catch (error) {
       console.error('Failed to get WeChat QR code:', error);
       return null;
+    }
+  };
+
+  // Refresh authentication token
+  const refreshToken = async (): Promise<boolean> => {
+    try {
+      if (!token.value) {
+        return false;
+      }
+
+      const result = await AuthAdapter.refreshTokenAPI(token.value);
+      
+      if (result.success && result.token) {
+        token.value = result.token;
+        localStorage.setItem('auth-token', result.token);
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Failed to refresh token:', error);
+      return false;
+    }
+  };
+
+  // Get current user info from server
+  const fetchUserInfo = async (): Promise<boolean> => {
+    try {
+      const result = await AuthAdapter.getUserInfoAPI();
+      
+      if (result.success && result.user) {
+        user.value = result.user;
+        localStorage.setItem('auth-user', JSON.stringify(result.user));
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Failed to fetch user info:', error);
+      return false;
     }
   };
 
@@ -124,6 +164,8 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     sendVerificationCode,
     getWeChatQRCode,
+    refreshToken,
+    fetchUserInfo,
     init,
     openLoginModal,
     closeLoginModal,
