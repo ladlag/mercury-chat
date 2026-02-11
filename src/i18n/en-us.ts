@@ -49,7 +49,7 @@ export default {
   underDevelop: "Under development",
   appendix: "Appendix",
   audio: "Audio",
-  agent: "Agent",
+  agentLabel: "Agent",
   agent: {
     requirement: "Requirement Analysis",
   },
@@ -92,5 +92,6 @@ export default {
     codeSent: "Code sent successfully",
     codeSendFailed: "Failed to send code",
     switchMethod: "Switch Login Method",
+    loading: "Loading...",
   },
 };

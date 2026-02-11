@@ -2,7 +2,7 @@
   <div class="wechat-qr-login">
     <div class="qr-container">
       <div v-if="loading" class="qr-loading">
-        <span class="loading-spinner">加载中...</span>
+        <span class="loading-spinner">{{ $t('auth.loading') }}</span>
       </div>
       <div v-else-if="qrCodeUrl && !expired" class="qr-code">
         <img :src="qrCodeUrl" :alt="$t('auth.scanQRCode')" />

@@ -48,7 +48,7 @@ export default {
   underDevelop: "开发中",
   appendix: "附件",
   audio: "音频",
-  agent: "智能体",
+  agentLabel: "智能体",
   agent: {
     requirement: "需求分析",
   },
@@ -91,5 +91,6 @@ export default {
     codeSent: "验证码已发送",
     codeSendFailed: "验证码发送失败",
     switchMethod: "切换登录方式",
+    loading: "加载中...",
   },
 };
