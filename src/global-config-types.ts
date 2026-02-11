@@ -18,6 +18,7 @@ export interface IGlobalConfig {
   subTitle?: string; // 欢迎语
   language?: LangType; // 国际化 配置后不展示切换语言按钮
   theme?: CustomThemeConfig; // 主题 配置后不展示切换主题按钮
+  requireLogin?: boolean; // 是否必须登录 默认false 如果为true 则未登录时点击内容或输入会弹出登录框
 }
 
 export interface CustomThemeConfig {

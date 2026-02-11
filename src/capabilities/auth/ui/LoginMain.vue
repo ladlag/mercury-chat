@@ -62,13 +62,23 @@ import VerificationCodeLogin from './VerificationCodeLogin.vue';
 import WeChatQRLogin from './WeChatQRLogin.vue';
 import EmailLogin from './EmailLogin.vue';
 import { activeCapabilityId } from '@/config/navbar-top.config';
+import { useAuthStore } from '@/store/auth-store';
 
 const { t } = useI18n();
+const authStore = useAuthStore();
 
 const activeMethod = ref('phone');
 
+const emit = defineEmits<{
+  close: [];
+}>();
+
 const handleLoginSuccess = () => {
   console.log(t('auth.loginSuccess'));
+  
+  // Close the login modal
+  authStore.closeLoginModal();
+  emit('close');
   
   // Navigate to default chat after successful login
   setTimeout(() => {
@@ -83,18 +93,15 @@ const handleLoginError = (message: string) => {
 
 <style scoped lang="scss">
 .login-main {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 20px;
-  background: var(--devui-global-bg, #f3f6f8);
+  padding: 0;
+  background: transparent;
 }
 
 .login-card {
   width: 100%;
   max-width: 480px;
-  box-shadow: var(--devui-shadow-length-base, 0 2px 8px 0 rgba(0, 0, 0, 0.15));
+  box-shadow: none;
+  border: none;
 }
 
 .login-header {

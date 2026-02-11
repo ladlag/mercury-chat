@@ -1,5 +1,5 @@
 <template>
-  <div class="chat-view-wrapper">
+  <div class="chat-view-wrapper" @click="handleContentClick">
     <div class="chat-view-container">
       <NavbarTop />
       <ChatProcess v-if="chatStatusStore.startChat" />
@@ -17,7 +17,7 @@
           :position="['top']"
           style="color: var(--devui-text)"
         >
-          <div class="new-chat-setting" @click="onNewConvo">
+          <div class="new-chat-setting" @click.stop="onNewConvo">
             <i class="icon-add"></i>
           </div>
         </d-popover>
@@ -27,7 +27,7 @@
     <div
       v-if="GlobalConfig.displayShape === DisplayShape.Immersive"
       :class="['toggle-wrapper', !commonStore.isExpand && 'not-expand']"
-      @click="onToggle"
+      @click.stop="onToggle"
     >
       <ExpandIcon />
     </div>
@@ -51,11 +51,13 @@ import NavbarTop from "./navbar-top.vue";
 import { ExpandIcon } from "@/components";
 import GlobalConfig from "@/global-config";
 import { DisplayShape } from "@/global-config-types";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 
 const chatHistoryStore = useChatHistoryStore();
 const chatMessageStore = useChatMessageStore();
 const chatStatusStore = useChatStatusStore();
 const commonStore = useCommonStore();
+const { checkAuth } = useAuthGuard();
 
 const onNewConvo = () => {
   chatHistoryStore.setActiveHistoryId("");
@@ -65,6 +67,11 @@ const onNewConvo = () => {
 
 const onToggle = () => {
   commonStore.isExpand = !commonStore.isExpand;
+};
+
+// Handle clicks on content area to check authentication
+const handleContentClick = () => {
+  checkAuth();
 };
 </script>
 

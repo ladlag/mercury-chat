@@ -1,5 +1,5 @@
 import type { Capability } from '@/capabilities/registry';
-import LoginMain from './ui/LoginMain.vue';
+import AuthPageView from './ui/AuthPageView.vue';
 
 export const AuthCapability: Capability = {
   id: 'auth-login',
@@ -11,6 +11,6 @@ export const AuthCapability: Capability = {
     visible: true,
   },
   ui: {
-    main: LoginMain,
+    main: AuthPageView,
   },
 };

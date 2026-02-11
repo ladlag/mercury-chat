@@ -9,6 +9,7 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(null);
   const isAuthenticated = ref(false);
   const loginMethod = ref<LoginMethod | null>(null);
+  const showLoginModal = ref(false); // Control login modal visibility
 
   // Initialize from localStorage
   const init = () => {
@@ -22,6 +23,16 @@ export const useAuthStore = defineStore('auth', () => {
       loginMethod.value = savedMethod as LoginMethod;
       isAuthenticated.value = true;
     }
+  };
+
+  // Show login modal
+  const openLoginModal = () => {
+    showLoginModal.value = true;
+  };
+
+  // Hide login modal
+  const closeLoginModal = () => {
+    showLoginModal.value = false;
   };
 
   // Login
@@ -106,6 +117,7 @@ export const useAuthStore = defineStore('auth', () => {
     token,
     isAuthenticated,
     loginMethod,
+    showLoginModal,
     
     // Actions
     login,
@@ -113,5 +125,7 @@ export const useAuthStore = defineStore('auth', () => {
     sendVerificationCode,
     getWeChatQRCode,
     init,
+    openLoginModal,
+    closeLoginModal,
   };
 });
