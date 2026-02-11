@@ -33,8 +33,12 @@ export function useNavbarItems() {
                     kind: c.kind,
 
                     onSelect() {
-                        activeCapabilityId.value = c.id;
-                        c.onActivate?.();
+                        // If capability has custom onActivate, call it and don't navigate
+                        if (c.onActivate) {
+                            c.onActivate();
+                        } else {
+                            activeCapabilityId.value = c.id;
+                        }
                     },
                 }))
         );
