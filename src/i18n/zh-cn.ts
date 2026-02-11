@@ -4,6 +4,8 @@ export default {
   },
   navbar: {
     chat: "对话",
+    chat2: "对话2",
+    chat3: "对话3",
     systemSetting: "系统设置",
   },
   history: {
@@ -47,6 +49,9 @@ export default {
   appendix: "附件",
   audio: "音频",
   agent: "智能体",
+  agent: {
+    requirement: "需求分析",
+  },
   thesaurus: "提示词库",
   onlineSearch: "联网搜索",
   chatSetting: "聊天设置",

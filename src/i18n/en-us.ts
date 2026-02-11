@@ -4,6 +4,8 @@ export default {
   },
   navbar: {
     chat: "Chat",
+    chat2: "Chat 2",
+    chat3: "Chat 3",
     systemSetting: "System Setting",
   },
   history: {
@@ -48,6 +50,9 @@ export default {
   appendix: "Appendix",
   audio: "Audio",
   agent: "Agent",
+  agent: {
+    requirement: "Requirement Analysis",
+  },
   thesaurus: "Prompts",
   onlineSearch: "OnlineSearch",
   chatSetting: "Chat Setting",

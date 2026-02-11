@@ -52,49 +52,32 @@
         </d-tabs>
       </div>
     </d-card>
-
-    <!-- Toast notification placeholder -->
-    <d-toast v-if="showToast" :type="toastType" :msg="toastMessage" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
 import VerificationCodeLogin from './VerificationCodeLogin.vue';
 import WeChatQRLogin from './WeChatQRLogin.vue';
 import EmailLogin from './EmailLogin.vue';
 import { activeCapabilityId } from '@/config/navbar-top.config';
 
 const { t } = useI18n();
-const router = useRouter();
 
 const activeMethod = ref('phone');
-const showToast = ref(false);
-const toastType = ref<'success' | 'error'>('success');
-const toastMessage = ref('');
 
 const handleLoginSuccess = () => {
-  toastType.value = 'success';
-  toastMessage.value = t('auth.loginSuccess');
-  showToast.value = true;
-
+  console.log(t('auth.loginSuccess'));
+  
   // Navigate to default chat after successful login
   setTimeout(() => {
     activeCapabilityId.value = 'chat-default';
-    showToast.value = false;
-  }, 1500);
+  }, 500);
 };
 
 const handleLoginError = (message: string) => {
-  toastType.value = 'error';
-  toastMessage.value = message;
-  showToast.value = true;
-
-  setTimeout(() => {
-    showToast.value = false;
-  }, 3000);
+  console.error(message);
 };
 </script>
 
