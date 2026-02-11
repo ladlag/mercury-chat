@@ -3,10 +3,24 @@
  * 
  * Provides an isolation layer between business authentication logic and external authentication services.
  * Following the project's principle of "Code Independence and Framework Upgrade Compatibility".
+ * 
+ * Backend API Base: http(s)://host:port/chat-api
+ * All authentication endpoints are under /auth path
  */
 
 import type { LoginRequest } from '@/types/auth-types';
 import { httpClient } from '@/utils/http-client';
+
+// API Endpoints Configuration
+const AUTH_ENDPOINTS = {
+  SEND_CODE: '/auth/verification-code/send',        // POST - Send verification code
+  LOGIN: '/auth/login',                             // POST - Login with credentials
+  LOGOUT: '/auth/logout',                           // POST - Logout
+  REFRESH_TOKEN: '/auth/token/refresh',             // POST - Refresh JWT token
+  USER_INFO: '/auth/user/info',                     // GET - Get current user info
+  WECHAT_QR: '/auth/wechat/qr-code',               // POST - Get WeChat QR code
+  WECHAT_STATUS: '/auth/wechat/scan-status',       // GET - Poll WeChat scan status
+} as const;
 
 export const AuthAdapter = {
   /**
@@ -53,15 +67,36 @@ export const AuthAdapter = {
 
   /**
    * Send verification code to phone
-   * API Endpoint: POST /api/auth/send-code
+   * 
+   * API Endpoint: POST /chat-api/auth/verification-code/send
+   * Request Body: { phone: string, type: 'sms' }
+   * Response: { code: 0, message: string, data: { expiresIn: number } }
+   * 
+   * NOTE: Currently using mock implementation
    */
   async sendVerificationCodeAPI(phone: string): Promise<{ success: boolean; message?: string }> {
     try {
-      const response = await httpClient.post('/auth/send-code', { phone });
+      // Mock implementation - replace with real API when backend is ready
+      console.log('[AuthAdapter] Mock: Sending verification code to:', phone);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Mock success response
+      return { 
+        success: true, 
+        message: '验证码已发送' 
+      };
+      
+      // Real API implementation (uncomment when backend is ready):
+      /*
+      const response = await httpClient.post(AUTH_ENDPOINTS.SEND_CODE, { 
+        phone,
+        type: 'sms'
+      });
       return { 
         success: response.code === 0, 
         message: response.message 
       };
+      */
     } catch (error: any) {
       console.error('[AuthAdapter] Failed to send verification code:', error);
       return { 
@@ -73,8 +108,20 @@ export const AuthAdapter = {
 
   /**
    * Login with credentials
-   * API Endpoint: POST /api/auth/login
-   * Returns JWT token and user info
+   * 
+   * API Endpoint: POST /chat-api/auth/login
+   * Request Body: LoginRequest
+   * Response: { 
+   *   code: 0, 
+   *   message: string, 
+   *   data: { 
+   *     token: string, 
+   *     refreshToken: string,
+   *     user: UserInfo 
+   *   } 
+   * }
+   * 
+   * Real API implementation with token
    */
   async loginAPI(request: LoginRequest): Promise<{ 
     success: boolean; 
@@ -83,7 +130,7 @@ export const AuthAdapter = {
     message?: string 
   }> {
     try {
-      const response = await httpClient.post('/auth/login', request);
+      const response = await httpClient.post(AUTH_ENDPOINTS.LOGIN, request);
       
       if (response.code === 0) {
         return {
@@ -108,7 +155,19 @@ export const AuthAdapter = {
 
   /**
    * Get WeChat QR code
-   * API Endpoint: POST /api/auth/wechat/qr
+   * 
+   * API Endpoint: POST /chat-api/auth/wechat/qr-code
+   * Request Body: { type: 'official' | 'scan' }
+   * Response: { 
+   *   code: 0, 
+   *   data: { 
+   *     qrUrl: string, 
+   *     ticket: string,
+   *     expiresIn: number 
+   *   } 
+   * }
+   * 
+   * NOTE: Currently using mock implementation
    */
   async getWeChatQRCodeAPI(type: 'official' | 'scan'): Promise<{ 
     success: boolean; 
@@ -117,7 +176,22 @@ export const AuthAdapter = {
     message?: string 
   }> {
     try {
-      const response = await httpClient.post('/auth/wechat/qr', { type });
+      // Mock implementation - replace with real API when backend is ready
+      console.log('[AuthAdapter] Mock: Getting WeChat QR code for:', type);
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      const mockTicket = `MOCK_TICKET_${Date.now()}`;
+      const mockQrUrl = `https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=${mockTicket}`;
+      
+      return { 
+        success: true, 
+        qrUrl: mockQrUrl,
+        ticket: mockTicket,
+      };
+      
+      // Real API implementation (uncomment when backend is ready):
+      /*
+      const response = await httpClient.post(AUTH_ENDPOINTS.WECHAT_QR, { type });
       
       if (response.code === 0) {
         return { 
@@ -131,6 +205,7 @@ export const AuthAdapter = {
           message: response.message,
         };
       }
+      */
     } catch (error: any) {
       console.error('[AuthAdapter] Failed to get WeChat QR code:', error);
       return { 
@@ -142,7 +217,19 @@ export const AuthAdapter = {
 
   /**
    * Poll WeChat QR code scan status
-   * API Endpoint: GET /api/auth/wechat/status?ticket=xxx
+   * 
+   * API Endpoint: GET /chat-api/auth/wechat/scan-status?ticket=xxx
+   * Response: { 
+   *   code: 0, 
+   *   data: { 
+   *     scanned: boolean,
+   *     confirmed: boolean,
+   *     token?: string,
+   *     user?: UserInfo
+   *   } 
+   * }
+   * 
+   * NOTE: Currently using mock implementation
    */
   async pollWeChatQRStatus(ticket: string): Promise<{ 
     success: boolean; 
@@ -152,7 +239,20 @@ export const AuthAdapter = {
     user?: any;
   }> {
     try {
-      const response = await httpClient.get(`/auth/wechat/status?ticket=${ticket}`);
+      // Mock implementation - replace with real API when backend is ready
+      console.log('[AuthAdapter] Mock: Polling WeChat QR status for ticket:', ticket);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Mock: Not scanned yet
+      return { 
+        success: true, 
+        scanned: false,
+        confirmed: false,
+      };
+      
+      // Real API implementation (uncomment when backend is ready):
+      /*
+      const response = await httpClient.get(`${AUTH_ENDPOINTS.WECHAT_STATUS}?ticket=${ticket}`);
       
       if (response.code === 0) {
         return { 
@@ -167,6 +267,7 @@ export const AuthAdapter = {
           success: false,
         };
       }
+      */
     } catch (error: any) {
       console.error('[AuthAdapter] Failed to poll WeChat QR status:', error);
       return { 
@@ -177,7 +278,16 @@ export const AuthAdapter = {
 
   /**
    * Refresh authentication token
-   * API Endpoint: POST /api/auth/refresh-token
+   * 
+   * API Endpoint: POST /chat-api/auth/token/refresh
+   * Request Body: { refreshToken: string }
+   * Response: { 
+   *   code: 0, 
+   *   data: { 
+   *     token: string,
+   *     refreshToken: string 
+   *   } 
+   * }
    */
   async refreshTokenAPI(refreshToken: string): Promise<{
     success: boolean;
@@ -185,7 +295,7 @@ export const AuthAdapter = {
     message?: string;
   }> {
     try {
-      const response = await httpClient.post('/auth/refresh-token', { refreshToken });
+      const response = await httpClient.post(AUTH_ENDPOINTS.REFRESH_TOKEN, { refreshToken });
       
       if (response.code === 0) {
         return {
@@ -209,11 +319,14 @@ export const AuthAdapter = {
 
   /**
    * Logout
-   * API Endpoint: POST /api/auth/logout
+   * 
+   * API Endpoint: POST /chat-api/auth/logout
+   * Request: No body (token in header)
+   * Response: { code: 0, message: string }
    */
   async logoutAPI(): Promise<{ success: boolean; message?: string }> {
     try {
-      const response = await httpClient.post('/auth/logout');
+      const response = await httpClient.post(AUTH_ENDPOINTS.LOGOUT);
       return {
         success: response.code === 0,
         message: response.message,
@@ -229,7 +342,13 @@ export const AuthAdapter = {
 
   /**
    * Get current user info
-   * API Endpoint: GET /api/auth/user
+   * 
+   * API Endpoint: GET /chat-api/auth/user/info
+   * Request: No body (token in header)
+   * Response: { 
+   *   code: 0, 
+   *   data: UserInfo 
+   * }
    */
   async getUserInfoAPI(): Promise<{
     success: boolean;
@@ -237,7 +356,7 @@ export const AuthAdapter = {
     message?: string;
   }> {
     try {
-      const response = await httpClient.get('/auth/user');
+      const response = await httpClient.get(AUTH_ENDPOINTS.USER_INFO);
       
       if (response.code === 0) {
         return {

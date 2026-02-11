@@ -3,9 +3,12 @@
  * 
  * Provides a configured HTTP client that automatically includes
  * authentication tokens in requests to the backend.
+ * 
+ * Backend API Format: http(s)://host:port/chat-api/xxxx
  */
 
 import { useAuthStore } from '@/store/auth-store';
+import { getApiBaseURL, getApiTimeout } from '@/config/backend-config';
 
 export interface RequestConfig extends RequestInit {
   baseURL?: string;
@@ -22,13 +25,14 @@ class HttpClient {
   private baseURL: string;
   private timeout: number;
 
-  constructor(baseURL: string = '/api', timeout: number = 10000) {
-    this.baseURL = baseURL;
-    this.timeout = timeout;
+  constructor(baseURL?: string, timeout?: number) {
+    this.baseURL = baseURL || getApiBaseURL();
+    this.timeout = timeout || getApiTimeout();
   }
 
   /**
    * Add authentication token to request headers
+   * Token format: Authorization: Bearer <token>
    */
   private getAuthHeaders(): HeadersInit {
     const authStore = useAuthStore();
@@ -36,6 +40,7 @@ class HttpClient {
       'Content-Type': 'application/json',
     };
 
+    // Add token to Authorization header if available
     if (authStore.token) {
       headers['Authorization'] = `Bearer ${authStore.token}`;
     }
@@ -45,6 +50,7 @@ class HttpClient {
 
   /**
    * Make HTTP request with token authentication
+   * All requests to backend must include token in header
    */
   private async request<T>(
     url: string,
@@ -52,6 +58,7 @@ class HttpClient {
   ): Promise<ApiResponse<T>> {
     const { baseURL = this.baseURL, timeout = this.timeout, ...fetchConfig } = config;
     
+    // Build full URL
     const fullURL = url.startsWith('http') ? url : `${baseURL}${url}`;
     
     // Merge auth headers with custom headers
@@ -59,6 +66,12 @@ class HttpClient {
       ...this.getAuthHeaders(),
       ...(fetchConfig.headers || {}),
     };
+
+    console.log('[HTTP Client] Request:', {
+      url: fullURL,
+      method: config.method || 'GET',
+      hasToken: !!headers['Authorization'],
+    });
 
     // Create abort controller for timeout
     const controller = new AbortController();
@@ -83,16 +96,26 @@ class HttpClient {
           throw new Error('Authentication failed. Please login again.');
         }
 
-        throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
+        // Handle other HTTP errors
+        const errorText = await response.text();
+        throw new Error(`HTTP Error ${response.status}: ${errorText || response.statusText}`);
       }
 
       // Parse response
       const data = await response.json();
+      
+      console.log('[HTTP Client] Response:', {
+        url: fullURL,
+        code: data.code,
+        success: data.code === 0,
+      });
+      
       return data;
     } catch (error: any) {
       if (error.name === 'AbortError') {
         throw new Error('Request timeout');
       }
+      console.error('[HTTP Client] Error:', error);
       throw error;
     }
   }
@@ -146,11 +169,13 @@ class HttpClient {
 
   /**
    * Upload file with multipart/form-data
+   * Token is still included in Authorization header
    */
   async upload<T>(url: string, formData: FormData, config?: RequestConfig): Promise<ApiResponse<T>> {
     const authStore = useAuthStore();
     const headers: HeadersInit = {};
 
+    // Add token for file uploads too
     if (authStore.token) {
       headers['Authorization'] = `Bearer ${authStore.token}`;
     }
