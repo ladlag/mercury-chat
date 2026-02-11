@@ -34,6 +34,7 @@ export function useNavbarItems() {
 
                     onSelect() {
                         // If capability has custom onActivate, call it and don't navigate
+                        // This allows capabilities like modals to overlay without changing active state
                         if (c.onActivate) {
                             c.onActivate();
                         } else {
