@@ -33,11 +33,12 @@ export function useNavbarItems() {
                     kind: c.kind,
 
                     onSelect() {
-                        // If capability has custom onActivate, call it and don't navigate
-                        // This allows capabilities like modals to overlay without changing active state
-                        if (c.onActivate) {
-                            c.onActivate();
-                        } else {
+                        // Call onActivate first if it exists
+                        c.onActivate?.();
+                        
+                        // Only navigate if capability has UI to display
+                        // Auth capability opens modal, so don't navigate
+                        if (c.id !== 'auth-login') {
                             activeCapabilityId.value = c.id;
                         }
                     },
