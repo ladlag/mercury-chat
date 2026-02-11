@@ -33,8 +33,15 @@ export function useNavbarItems() {
                     kind: c.kind,
 
                     onSelect() {
-                        activeCapabilityId.value = c.id;
+                        // Execute onActivate first (if defined) to perform any immediate actions
+                        // such as opening modals, logging, or setting up state
                         c.onActivate?.();
+                        
+                        // Then handle navigation based on capability configuration
+                        // Capabilities with preventNavigation=true (e.g., modals) skip navigation
+                        if (!c.preventNavigation) {
+                            activeCapabilityId.value = c.id;
+                        }
                     },
                 }))
         );

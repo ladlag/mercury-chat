@@ -26,6 +26,7 @@ export interface Capability {
     navbar: CapabilityNavbar;
     ui: CapabilityUI;
     onActivate?: () => void;
+    preventNavigation?: boolean; // Set to true for modal-only capabilities
 }
 
 /**
