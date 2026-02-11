@@ -33,12 +33,12 @@ export function useNavbarItems() {
                     kind: c.kind,
 
                     onSelect() {
-                        // Call onActivate first if it exists
+                        // Call onActivate first if it exists (for side effects)
                         c.onActivate?.();
                         
-                        // Only navigate if capability has UI to display
-                        // Auth capability opens modal, so don't navigate
-                        if (c.id !== 'auth-login') {
+                        // Only navigate if capability doesn't prevent navigation
+                        // Capabilities with preventNavigation=true (e.g., modals) skip navigation
+                        if (!c.preventNavigation) {
                             activeCapabilityId.value = c.id;
                         }
                     },

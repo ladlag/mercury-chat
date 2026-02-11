@@ -14,6 +14,7 @@ export const AuthCapability: Capability = {
   ui: {
     main: AuthPageView,
   },
+  preventNavigation: true, // This capability opens a modal instead of navigating
   onActivate: () => {
     // Open login modal instead of navigating to page
     const authStore = useAuthStore();
