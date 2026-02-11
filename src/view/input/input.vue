@@ -46,9 +46,11 @@ import { InputAppendix } from '@view/appendix';
 import { InputAtModel } from '@view/chat-model';
 import { InputOnlineSearch } from '@view/online-search';
 import { ref } from 'vue';
+import { useAuthGuard } from '@/hooks/useAuthGuard';
 
 const chatMessageStore = useChatMessageStore();
 const chatModelStore = useChatModelStore();
+const { guardAction } = useAuthGuard();
 
 const inputValue = ref('');
 
@@ -58,9 +60,10 @@ chatMessageStore.$onAction(({ name }) => {
   }
 });
 
-const onSubmit = (val: string) => {
+// Wrap the submit action with authentication guard
+const onSubmit = guardAction((val: string) => {
   chatMessageStore.ask(val);
-};
+});
 
 const onModelClick = () => {
   inputValue.value += `@${chatModelStore.currentModel?.modelName}`;

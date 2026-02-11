@@ -1,3 +1,4 @@
+export * from './auth-store';
 export * from './common-store';
 export * from './history-store';
 export * from './lang-store';

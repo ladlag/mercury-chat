@@ -40,19 +40,22 @@ import {
 import { useChatMessageStore, useLangStore } from '@/store';
 import { LangType } from '@/types';
 import Logo2X from '/logo2x.svg';
+import { useAuthGuard } from '@/hooks/useAuthGuard';
 
 const langStore = useLangStore();
 const chatMessageStore = useChatMessageStore();
+const { guardAction } = useAuthGuard();
 
 const list = computed(() =>
   langStore.currentLang === LangType.CN ? guessQuestionsCn : guessQuestionsEn,
 );
 
-const onItemClick = (item) => {
+// Wrap the click action with authentication guard
+const onItemClick = guardAction((item) => {
   if (mockAnswer[item.value]) {
     chatMessageStore.ask(item.label, mockAnswer[item.value]);
   }
-};
+});
 </script>
 
 <style scoped lang="scss">
