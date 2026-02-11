@@ -33,10 +33,11 @@ export function useNavbarItems() {
                     kind: c.kind,
 
                     onSelect() {
-                        // Call onActivate first if it exists (for side effects)
+                        // Execute onActivate first (if defined) to perform any immediate actions
+                        // such as opening modals, logging, or setting up state
                         c.onActivate?.();
                         
-                        // Only navigate if capability doesn't prevent navigation
+                        // Then handle navigation based on capability configuration
                         // Capabilities with preventNavigation=true (e.g., modals) skip navigation
                         if (!c.preventNavigation) {
                             activeCapabilityId.value = c.id;
