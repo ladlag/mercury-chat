@@ -1,10 +1,11 @@
 <template>
-  <div class="auth-page-wrapper">
+  <CapabilityViewLayout mode="center">
     <LoginMain @close="handleClose" />
-  </div>
+  </CapabilityViewLayout>
 </template>
 
 <script setup lang="ts">
+import CapabilityViewLayout from '@/capabilities/common/ui/CapabilityViewLayout.vue';
 import LoginMain from './LoginMain.vue';
 import { activeCapabilityId } from '@/config/navbar-top.config';
 
@@ -13,14 +14,3 @@ const handleClose = () => {
   activeCapabilityId.value = 'chat-default';
 };
 </script>
-
-<style scoped lang="scss">
-.auth-page-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 20px;
-  background: var(--devui-global-bg, #f3f6f8);
-}
-</style>
