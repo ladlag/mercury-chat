@@ -31,9 +31,9 @@
             </d-tabs>
           </div>
           <div class="switch-method">
-            <a class="switch-link" @click="showSecondary = true">
+            <button type="button" class="switch-link" @click="showSecondary = true">
               {{ $t('auth.otherLoginMethods') }}
-            </a>
+            </button>
           </div>
         </template>
 
@@ -61,9 +61,9 @@
             </d-tabs>
           </div>
           <div class="switch-method">
-            <a class="switch-link" @click="showSecondary = false">
+            <button type="button" class="switch-link" @click="showSecondary = false">
               {{ $t('auth.backToMainMethods') }}
-            </a>
+            </button>
           </div>
         </template>
       </div>
@@ -166,6 +166,9 @@ const handleLoginError = (message: string) => {
   font-size: 14px;
   cursor: pointer;
   text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
 
   &:hover {
     text-decoration: underline;
