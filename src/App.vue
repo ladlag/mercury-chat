@@ -111,3 +111,31 @@ function init() {
   min-width: 0;
 }
 </style>
+
+<style lang="scss">
+.devui-modal:has(.login-main) {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.04);
+
+  .btn-close {
+    top: 16px;
+    right: 16px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: var(--devui-list-item-hover-bg, #f2f2f3);
+    }
+  }
+
+  .devui-modal__body {
+    padding: 24px 32px 32px;
+  }
+}
+</style>

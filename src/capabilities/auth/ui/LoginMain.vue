@@ -93,7 +93,7 @@ const handleLoginError = (message: string) => {
 
 <style scoped lang="scss">
 .login-main {
-  padding: 0;
+  padding: 16px 8px 8px;
   background: transparent;
 }
 
@@ -102,18 +102,26 @@ const handleLoginError = (message: string) => {
   max-width: 480px;
   box-shadow: none;
   border: none;
+  background: transparent;
+
+  :deep(.devui-card) {
+    box-shadow: none;
+    border: none;
+    background: transparent;
+  }
 }
 
 .login-header {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 28px;
 }
 
 .login-title {
-  font-size: 28px;
-  font-weight: 600;
+  font-size: 24px;
+  font-weight: 700;
   color: var(--devui-text, #252b3a);
   margin: 0 0 8px 0;
+  letter-spacing: 0.5px;
 }
 
 .login-subtitle {
@@ -123,18 +131,56 @@ const handleLoginError = (message: string) => {
 }
 
 .login-methods {
-  margin-top: 24px;
-  
+  margin-top: 16px;
+
   :deep(.devui-tabs) {
-    .devui-tab-list {
+    .devui-tabs__nav {
+      display: flex;
       justify-content: center;
-      margin-bottom: 24px;
+      list-style: none;
+      padding: 0;
+      margin: 0 0 16px;
+      border-bottom: 1px solid var(--devui-dividing-line, #dfe1e6);
+      position: relative;
+
+      > li {
+        padding: 8px 14px;
+        font-size: 13px;
+        color: var(--devui-text-weak, #575d6c);
+        border: none;
+        background: transparent;
+        border-bottom: 2px solid transparent;
+        transition: color 0.2s, border-color 0.2s, background-color 0.2s;
+        cursor: pointer;
+        margin-bottom: -1px;
+
+        a {
+          color: inherit;
+          text-decoration: none;
+        }
+
+        &:hover {
+          color: var(--devui-brand, #5e7ce0);
+          background-color: var(--devui-brand-foil, rgba(94, 124, 224, 0.06));
+          border-radius: 6px 6px 0 0;
+        }
+
+        &.active {
+          color: var(--devui-brand, #5e7ce0);
+          font-weight: 600;
+          border-bottom-color: var(--devui-brand, #5e7ce0);
+        }
+      }
+
+      .devui-tabs__nav-card-animation {
+        display: none;
+      }
     }
   }
 }
 
 .tab-content {
-  padding: 20px 0;
-  min-height: 300px;
+  padding: 16px 0 0;
+  min-height: 260px;
 }
 </style>
