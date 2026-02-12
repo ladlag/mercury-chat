@@ -172,4 +172,20 @@ onBeforeUnmount(() => {
     line-height: 1.6;
   }
 }
+
+@media screen and (max-width: 480px) {
+  .wechat-qr-login {
+    padding: 12px;
+  }
+
+  .qr-container {
+    width: 200px;
+    height: 200px;
+  }
+
+  .qr-code {
+    width: 180px;
+    height: 180px;
+  }
+}
 </style>
