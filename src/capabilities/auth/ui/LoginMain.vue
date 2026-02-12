@@ -7,49 +7,65 @@
       </div>
 
       <div class="login-methods">
-        <d-tabs v-model="activeMethod" type="card">
-          <!-- Primary: Phone Verification -->
-          <d-tab id="phone" :title="$t('auth.phoneLogin')">
-            <div class="tab-content">
-              <VerificationCodeLogin
-                @success="handleLoginSuccess"
-                @error="handleLoginError"
-              />
-            </div>
-          </d-tab>
+        <!-- Primary login methods -->
+        <template v-if="!showSecondary">
+          <div class="primary-methods">
+            <d-tabs v-model="primaryMethod" type="card">
+              <d-tab id="phone" :title="$t('auth.phoneLogin')">
+                <div class="tab-content">
+                  <VerificationCodeLogin
+                    @success="handleLoginSuccess"
+                    @error="handleLoginError"
+                  />
+                </div>
+              </d-tab>
+              <d-tab id="wechat-official" :title="$t('auth.wechatOfficialLogin')">
+                <div class="tab-content">
+                  <WeChatQRLogin
+                    type="official"
+                    @success="handleLoginSuccess"
+                    @error="handleLoginError"
+                  />
+                </div>
+              </d-tab>
+            </d-tabs>
+          </div>
+          <div class="switch-method">
+            <a class="switch-link" @click="showSecondary = true">
+              {{ $t('auth.otherLoginMethods') }}
+            </a>
+          </div>
+        </template>
 
-          <!-- Primary: WeChat Official Account -->
-          <d-tab id="wechat-official" :title="$t('auth.wechatOfficialLogin')">
-            <div class="tab-content">
-              <WeChatQRLogin
-                type="official"
-                @success="handleLoginSuccess"
-                @error="handleLoginError"
-              />
-            </div>
-          </d-tab>
-
-          <!-- Secondary: Email -->
-          <d-tab id="email" :title="$t('auth.emailLogin')">
-            <div class="tab-content">
-              <EmailLogin
-                @success="handleLoginSuccess"
-                @error="handleLoginError"
-              />
-            </div>
-          </d-tab>
-
-          <!-- Secondary: WeChat Scan -->
-          <d-tab id="wechat-scan" :title="$t('auth.wechatScanLogin')">
-            <div class="tab-content">
-              <WeChatQRLogin
-                type="scan"
-                @success="handleLoginSuccess"
-                @error="handleLoginError"
-              />
-            </div>
-          </d-tab>
-        </d-tabs>
+        <!-- Secondary login methods -->
+        <template v-else>
+          <div class="secondary-methods">
+            <d-tabs v-model="secondaryMethod" type="card">
+              <d-tab id="email" :title="$t('auth.emailLogin')">
+                <div class="tab-content">
+                  <EmailLogin
+                    @success="handleLoginSuccess"
+                    @error="handleLoginError"
+                  />
+                </div>
+              </d-tab>
+              <d-tab id="wechat-scan" :title="$t('auth.wechatScanLogin')">
+                <div class="tab-content">
+                  <WeChatQRLogin
+                    type="scan"
+                    @success="handleLoginSuccess"
+                    @error="handleLoginError"
+                  />
+                </div>
+              </d-tab>
+            </d-tabs>
+          </div>
+          <div class="switch-method">
+            <a class="switch-link" @click="showSecondary = false">
+              {{ $t('auth.backToMainMethods') }}
+            </a>
+          </div>
+        </template>
       </div>
     </d-card>
   </div>
@@ -67,7 +83,9 @@ import { useAuthStore } from '@/store/auth-store';
 const { t } = useI18n();
 const authStore = useAuthStore();
 
-const activeMethod = ref('phone');
+const showSecondary = ref(false);
+const primaryMethod = ref('phone');
+const secondaryMethod = ref('email');
 
 const emit = defineEmits<{
   close: [];
@@ -136,5 +154,21 @@ const handleLoginError = (message: string) => {
 .tab-content {
   padding: 20px 0;
   min-height: 300px;
+}
+
+.switch-method {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.switch-link {
+  color: var(--devui-brand, #5e7ce0);
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 </style>

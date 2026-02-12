@@ -92,6 +92,8 @@ export default {
     codeSent: "Code sent successfully",
     codeSendFailed: "Failed to send code",
     switchMethod: "Switch Login Method",
+    otherLoginMethods: "Other login methods",
+    backToMainMethods: "Back to main login methods",
     loading: "Loading...",
   },
 };

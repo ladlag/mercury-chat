@@ -91,6 +91,8 @@ export default {
     codeSent: "验证码已发送",
     codeSendFailed: "验证码发送失败",
     switchMethod: "切换登录方式",
+    otherLoginMethods: "其他登录方式",
+    backToMainMethods: "返回主要登录方式",
     loading: "加载中...",
   },
 };

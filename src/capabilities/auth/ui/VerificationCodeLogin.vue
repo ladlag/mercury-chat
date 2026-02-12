@@ -146,6 +146,7 @@ onBeforeUnmount(() => {
 .code-input-group {
   display: flex;
   gap: 12px;
+  align-items: stretch;
   
   :deep(.devui-input) {
     flex: 1;
@@ -155,6 +156,7 @@ onBeforeUnmount(() => {
 .send-code-btn {
   white-space: nowrap;
   min-width: 120px;
+  height: auto;
 }
 
 .login-btn {
