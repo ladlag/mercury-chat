@@ -26,9 +26,21 @@ const handleClose = () => {
 }
 
 .auth-container {
-  width: 100%;
-  max-width: 460px;
-  padding: 16px;
+  width: 60vw;
+  max-width: 720px;
+  min-width: 340px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  background: var(--devui-base-bg, #ffffff);
   box-sizing: border-box;
+}
+
+@media screen and (max-width: 768px) {
+  .auth-container {
+    width: 92vw;
+    min-width: 0;
+    max-width: none;
+  }
 }
 </style>

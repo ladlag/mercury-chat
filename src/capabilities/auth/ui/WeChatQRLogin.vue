@@ -117,9 +117,10 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   border: 1px solid var(--devui-dividing-line, #dfe1e6);
-  border-radius: 8px;
+  border-radius: 12px;
   background: var(--devui-base-bg, #ffffff);
   margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .qr-loading {
@@ -153,6 +154,11 @@ onBeforeUnmount(() => {
   p {
     color: var(--devui-text-weak, #575d6c);
     margin: 0;
+    font-size: 14px;
+  }
+
+  :deep(.devui-btn) {
+    border-radius: 8px;
   }
 }
 
@@ -160,9 +166,26 @@ onBeforeUnmount(() => {
   text-align: center;
   
   .tip-text {
-    color: var(--devui-text, #252b3a);
-    font-size: 14px;
+    color: var(--devui-text-weak, #575d6c);
+    font-size: 13px;
     margin: 0;
+    line-height: 1.6;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .wechat-qr-login {
+    padding: 12px;
+  }
+
+  .qr-container {
+    width: 200px;
+    height: 200px;
+  }
+
+  .qr-code {
+    width: 180px;
+    height: 180px;
   }
 }
 </style>

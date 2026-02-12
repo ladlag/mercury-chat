@@ -31,7 +31,7 @@
 
       <d-form-item>
         <d-button
-          type="primary"
+          variant="solid"
           size="lg"
           :loading="loading"
           :disabled="!canLogin"
@@ -141,6 +141,33 @@ onBeforeUnmount(() => {
 <style scoped lang="scss">
 .verification-code-login {
   width: 100%;
+
+  :deep(.devui-form-label) {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--devui-text, #252b3a);
+    margin-bottom: 6px;
+  }
+
+  :deep(.devui-input__wrapper) {
+    border-radius: 8px;
+    border: 1px solid var(--devui-line, #dfe1e6);
+    transition: border-color 0.2s, box-shadow 0.2s;
+
+    &:hover {
+      border-color: var(--devui-brand, #5e7ce0);
+    }
+
+    &.devui-input--focus,
+    &:focus-within {
+      border-color: var(--devui-brand, #5e7ce0);
+      box-shadow: 0 0 0 3px rgba(94, 124, 224, 0.12);
+    }
+  }
+
+  :deep(.devui-button) {
+    border-radius: 8px;
+  }
 }
 
 .code-input-group {
@@ -150,17 +177,36 @@ onBeforeUnmount(() => {
   
   :deep(.devui-input) {
     flex: 1;
+    min-width: 0;
   }
 }
 
 .send-code-btn {
   white-space: nowrap;
   min-width: 120px;
+  font-size: 13px;
+  flex-shrink: 0;
   height: auto;
 }
 
 .login-btn {
   width: 100%;
-  margin-top: 8px;
+  margin-top: 12px;
+  height: 40px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+@media screen and (max-width: 480px) {
+  .code-input-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .send-code-btn {
+    min-width: unset;
+    width: 100%;
+  }
 }
 </style>
