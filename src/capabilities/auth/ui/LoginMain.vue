@@ -202,7 +202,7 @@ const handleLoginError = (message: string) => {
 /* ---- Mobile responsive ---- */
 @media screen and (max-width: 768px) {
   .login-main {
-    padding: 16px 12px 12px;
+    padding: 16px 8px 8px;
   }
 
   .login-card {
@@ -224,6 +224,18 @@ const handleLoginError = (message: string) => {
         }
       }
     }
+  }
+
+  /* Force form items to vertical layout on mobile */
+  :deep(.devui-form__item--horizontal) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  :deep(.devui-form__label) {
+    flex: none;
+    width: 100%;
+    padding-bottom: 6px;
   }
 }
 </style>

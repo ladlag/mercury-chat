@@ -148,7 +148,7 @@ function init() {
     max-width: none;
 
     .devui-modal__body {
-      padding: 16px 16px 24px;
+      padding: 12px 12px 20px;
     }
   }
 }
