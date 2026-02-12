@@ -31,7 +31,6 @@
     :close-on-click-modal="!requireLogin || authStore.isAuthenticated"
     :esc-key-closeable="!requireLogin || authStore.isAuthenticated"
     :show-overlay="true"
-    width="500px"
     @close="authStore.closeLoginModal"
   >
     <LoginMain @close="authStore.closeLoginModal" />
@@ -114,6 +113,9 @@ function init() {
 
 <style lang="scss">
 .devui-modal:has(.login-main) {
+  width: 60vw;
+  max-width: 720px;
+  min-width: 340px;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.04);
@@ -136,6 +138,18 @@ function init() {
 
   .devui-modal__body {
     padding: 24px 32px 32px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .devui-modal:has(.login-main) {
+    width: 92vw;
+    min-width: 0;
+    max-width: none;
+
+    .devui-modal__body {
+      padding: 12px 12px 20px;
+    }
   }
 }
 </style>

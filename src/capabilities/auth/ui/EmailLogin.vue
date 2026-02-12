@@ -174,6 +174,7 @@ onBeforeUnmount(() => {
   
   :deep(.devui-input) {
     flex: 1;
+    min-width: 0;
   }
 }
 
@@ -181,6 +182,7 @@ onBeforeUnmount(() => {
   white-space: nowrap;
   min-width: 120px;
   font-size: 13px;
+  flex-shrink: 0;
 }
 
 .login-btn {
@@ -190,5 +192,17 @@ onBeforeUnmount(() => {
   font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.5px;
+}
+
+@media screen and (max-width: 480px) {
+  .code-input-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .send-code-btn {
+    min-width: unset;
+    width: 100%;
+  }
 }
 </style>

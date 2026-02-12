@@ -93,16 +93,20 @@ const handleLoginError = (message: string) => {
 
 <style scoped lang="scss">
 .login-main {
-  padding: 16px 8px 8px;
+  padding: 24px 16px 16px;
   background: transparent;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .login-card {
   width: 100%;
-  max-width: 480px;
   box-shadow: none;
   border: none;
   background: transparent;
+  box-sizing: border-box;
 
   :deep(.devui-card) {
     box-shadow: none;
@@ -132,20 +136,25 @@ const handleLoginError = (message: string) => {
 
 .login-methods {
   margin-top: 16px;
+  overflow: visible;
 
   :deep(.devui-tabs) {
+    overflow: visible;
+
     .devui-tabs__nav {
       display: flex;
+      flex-wrap: wrap;
       justify-content: center;
       list-style: none;
       padding: 0;
       margin: 0 0 16px;
       border-bottom: 1px solid var(--devui-dividing-line, #dfe1e6);
       position: relative;
+      gap: 4px;
 
       > li {
-        padding: 8px 14px;
-        font-size: 13px;
+        padding: 10px 18px;
+        font-size: 14px;
         color: var(--devui-text-weak, #575d6c);
         border: none;
         background: transparent;
@@ -153,6 +162,7 @@ const handleLoginError = (message: string) => {
         transition: color 0.2s, border-color 0.2s, background-color 0.2s;
         cursor: pointer;
         margin-bottom: -1px;
+        white-space: nowrap;
 
         a {
           color: inherit;
@@ -176,11 +186,56 @@ const handleLoginError = (message: string) => {
         display: none;
       }
     }
+
+    .devui-tab-content {
+      overflow: visible;
+    }
   }
 }
 
 .tab-content {
   padding: 16px 0 0;
   min-height: 260px;
+  overflow: visible;
+}
+
+/* ---- Mobile responsive ---- */
+@media screen and (max-width: 768px) {
+  .login-main {
+    padding: 16px 8px 8px;
+  }
+
+  .login-card {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .login-title {
+    font-size: 20px;
+  }
+
+  .login-methods {
+    :deep(.devui-tabs) {
+      .devui-tabs__nav {
+        > li {
+          padding: 8px 12px;
+          font-size: 13px;
+        }
+      }
+    }
+  }
+
+  /* Force form items to vertical layout on mobile */
+  :deep(.devui-form__item--horizontal) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  :deep(.devui-form__label) {
+    flex: none;
+    width: 100%;
+    padding-bottom: 6px;
+  }
 }
 </style>
