@@ -1,16 +1,34 @@
 <template>
-  <CapabilityViewLayout mode="center">
-    <LoginMain @close="handleClose" />
-  </CapabilityViewLayout>
+  <div class="auth-page">
+    <div class="auth-container">
+      <LoginMain @close="handleClose" />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import CapabilityViewLayout from '@/capabilities/common/ui/CapabilityViewLayout.vue';
 import LoginMain from './LoginMain.vue';
 import { activeCapabilityId } from '@/config/navbar-top.config';
 
 const handleClose = () => {
-  // Navigate to default chat when closing from standalone page
   activeCapabilityId.value = 'chat-default';
 };
 </script>
+
+<style scoped lang="scss">
+.auth-page {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--devui-global-bg, #f3f6f8);
+}
+
+.auth-container {
+  width: 100%;
+  max-width: 460px;
+  padding: 16px;
+  box-sizing: border-box;
+}
+</style>

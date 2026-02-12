@@ -23,26 +23,13 @@
       />
     </template>
   </Layout>
-
-  <!-- Global Login Modal -->
-  <d-modal
-    v-model="authStore.showLoginModal"
-    :show-close="!requireLogin || authStore.isAuthenticated"
-    :close-on-click-modal="!requireLogin || authStore.isAuthenticated"
-    :esc-key-closeable="!requireLogin || authStore.isAuthenticated"
-    :show-overlay="true"
-    width="500px"
-    @close="authStore.closeLoginModal"
-  >
-    <LoginMain @close="authStore.closeLoginModal" />
-  </d-modal>
 </template>
 
 <script setup lang="ts">
 import GlobalConfig from "@/global-config";
 import { DisplayShape, ThemeEnum } from "@/global-config-types";
 import { useLang, useTheme } from "@/hooks";
-import { useLangStore, useThemeStore, useAuthStore } from "@/store";
+import { useLangStore, useThemeStore } from "@/store";
 import { LangType } from "@/types";
 
 import { Layout } from "@view/layout";
@@ -56,10 +43,8 @@ import "@/capabilities/index";
 
 import MateChatDefaultView from "@/capabilities/chat/ui/MateChatDefaultView.vue";
 import CapabilitySideDrawer from "@/capabilities/common/ui/CapabilitySideDrawer.vue";
-import LoginMain from "@/capabilities/auth/ui/LoginMain.vue";
 
 const displayShape = GlobalConfig.displayShape;
-const requireLogin = computed(() => GlobalConfig.requireLogin ?? false);
 
 const capabilities = useCapabilities();
 const activeCapability = computed(() =>
@@ -72,7 +57,6 @@ const activeSide = computed(() => activeCapability.value?.ui?.side || null);
 const sideTitle = computed(() => "Tools");
 
 const sideVisible = ref(false);
-const authStore = useAuthStore();
 
 watch(
     () => activeCapabilityId.value,
