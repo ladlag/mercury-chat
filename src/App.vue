@@ -31,7 +31,7 @@
     :close-on-click-modal="!requireLogin || authStore.isAuthenticated"
     :esc-key-closeable="!requireLogin || authStore.isAuthenticated"
     :show-overlay="true"
-    width="60vw"
+    :width="loginModalWidth"
     @close="authStore.closeLoginModal"
   >
     <LoginMain @close="authStore.closeLoginModal" />
@@ -48,7 +48,7 @@ import { LangType } from "@/types";
 import { Layout } from "@view/layout";
 import { NavBar } from "@view/navbar";
 
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, onMounted, onBeforeUnmount } from "vue";
 import { useCapabilities } from "@/capabilities/registry";
 import { activeCapabilityId } from "@/config/navbar-top.config";
 
@@ -73,6 +73,12 @@ const sideTitle = computed(() => "Tools");
 
 const sideVisible = ref(false);
 const authStore = useAuthStore();
+
+const windowWidth = ref(window.innerWidth);
+const onResize = () => { windowWidth.value = window.innerWidth; };
+onMounted(() => window.addEventListener('resize', onResize));
+onBeforeUnmount(() => window.removeEventListener('resize', onResize));
+const loginModalWidth = computed(() => windowWidth.value <= 768 ? '92vw' : '60vw');
 
 watch(
     () => activeCapabilityId.value,
@@ -143,7 +149,6 @@ function init() {
 
 @media screen and (max-width: 768px) {
   .devui-modal:has(.login-main) {
-    width: 92vw !important;
     min-width: 0;
     max-width: none;
 
